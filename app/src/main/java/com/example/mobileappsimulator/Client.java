@@ -28,6 +28,7 @@ public class Client {
 
             //create a socket to make the connection with the server
             socket = new Socket(serverAddress, portNumber);
+            System.out.println("Connect :)");
         } catch (Exception e) {
             Log.e("TCP", "C: Error", e);
         }
