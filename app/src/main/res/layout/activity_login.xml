@@ -39,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:hint="@string/Port"
+            android:text="@string/Port"
             android:textSize="20sp" />
     </LinearLayout>
 
