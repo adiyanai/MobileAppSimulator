@@ -38,8 +38,9 @@ public class Client {
             public void run() {
                 //create a socket to make the connection with the server
                 try {
-                    socket = new Socket(serverAddress, portNumber);
-                    System.out.println("Connect :)");
+                    while (socket == null) {
+                        socket = new Socket(serverAddress, portNumber);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

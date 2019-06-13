@@ -6,9 +6,6 @@ import android.os.Bundle;
 
 public class JoystickActivity extends AppCompatActivity {
 
-    private String elevatorPath = "set controls/flight/elevator ";
-    private String aileronPath = "set controls/flight/aileron ";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

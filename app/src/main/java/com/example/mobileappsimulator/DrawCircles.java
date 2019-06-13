@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.core.view.MotionEventCompat;
 
 
+@SuppressWarnings("deprecation")
 public class DrawCircles extends View {
     static int x;
     static int y;
@@ -19,11 +20,13 @@ public class DrawCircles extends View {
     private Paint bigCircle;
     private Paint smallCircle;
     private boolean isJoystickMoving;
+    private boolean start;
+    private String elevatorPath = "set controls/flight/elevator ";
+    private String aileronPath = "set controls/flight/aileron ";
 
     @SuppressLint("ClickableViewAccessibility")
     public DrawCircles(Context context) {
         super(context);
-
         isJoystickMoving = false;
 
         bigCircle = new Paint();
@@ -36,6 +39,7 @@ public class DrawCircles extends View {
         smallCircle.setAntiAlias(true);
         smallCircle.setColor(Color.BLACK);
 
+        start = true;
     }
 
     @Override
@@ -50,41 +54,56 @@ public class DrawCircles extends View {
         // draw bigCircle
         canvas.drawCircle(xBigCircle, yBigCircle, radiusBig, bigCircle);
 
+        if (start) {
+            x =  getWidth() / 2;
+            y = getHeight() / 2;
+        }
+
         // draw smallCircle
-        canvas.drawCircle(xBigCircle, yBigCircle, radiusSmall, smallCircle);
+        canvas.drawCircle(x, y, radiusSmall, smallCircle);
     }
 
-    // todo - understand how to start and finish with the circle in the middle
+    // todo - handle the send message problem
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = MotionEventCompat.getActionMasked(event);
 
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
-                isJoystickMoving = true;
+                int xEvent =  (int)event.getX();
+                int yEvent  = (int)event.getY();
+
+                if ((xEvent >= x - radiusSmall && xEvent <= x + radiusSmall)
+                        && (yEvent >= y - radiusSmall && yEvent <= y + radiusSmall)) {
+                    isJoystickMoving = true;
+                    start = false;
+                }
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-              /*  if (!isJoystickMoving)
+                if (!isJoystickMoving) {
                     return true;
-                int x = (int)event.getX();
-                int y = (int)event.getY();
-                if (x >= maze[0].length || pos.y >= maze.length) {
-                    isJoystickMoving = false;
-                } else if (maze[pos.y][pos.x] == 0) {
-                    playerPos = pos;
-                    invalidate();
-                } else {
-                    isJoystickMoving = false;
-                }*/
+                }
+                x =  (int)event.getX();
+                y = (int)event.getY();
                 invalidate();
                 break;
-
             }
             case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_CANCEL: {
+                /*String xEvent =  String.valueOf((int)event.getX());
+                String yEvent  = String.valueOf((int)event.getY());
+                String elevator = elevatorPath + yEvent + "\r\n";
+                String aileron = aileronPath + xEvent + "\r\n";
+                CommandModel.getInstance().sendMessage(elevator);
+                CommandModel.getInstance().sendMessage(aileron);*/
+                x =  getWidth() / 2;
+                y = getHeight() / 2;
+                invalidate();
                 isJoystickMoving = false;
                 break;
+            }
         }
         return true;
     }
