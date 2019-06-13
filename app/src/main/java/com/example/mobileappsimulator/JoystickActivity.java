@@ -26,7 +26,7 @@ public class JoystickActivity extends AppCompatActivity {
         super.onDestroy();
 
         //todo -- CHECK IF WORKING
-        CommandModel.getInstance().close();
+        //CommandModel.getInstance().close();
     }
 
 }

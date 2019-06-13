@@ -37,12 +37,12 @@ public class Client {
             @Override
             public void run() {
                 //create a socket to make the connection with the server
-                try {
-                    while (socket == null) {
+                while (socket == null) {
+                    try {
                         socket = new Socket(serverAddress, portNumber);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         };
