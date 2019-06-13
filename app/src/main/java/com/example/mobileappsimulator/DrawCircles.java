@@ -14,10 +14,10 @@ import androidx.core.view.MotionEventCompat;
 
 @SuppressWarnings("deprecation")
 public class DrawCircles extends View {
-    static int x;
-    static int y;
-    static int radiusBig;
-    final static int radiusSmall = 100;
+    private int x;
+    private int y;
+    private int radiusBig;
+    final private int radiusSmall = 100;
     private Paint bigCircle;
     private Paint smallCircle;
     private boolean isJoystickMoving;
@@ -106,14 +106,17 @@ public class DrawCircles extends View {
                     return true;
                 }
 
-                int w, h;
+                int w, h, diameter;
                 w = getWidth();
                 h = getHeight();
 
                 x =  (int)event.getX();
                 y = (int)event.getY();
 
-                if ((x + radiusSmall > w) || (x - radiusSmall < 0) || (y + radiusSmall > h) || (y - radiusSmall < 0)) {
+                diameter = radiusBig * 2;
+
+                if ((x + radiusSmall > w - (w - diameter)/2) || (x - radiusSmall < (w - diameter)/2) ||
+                        (y + radiusSmall > h - (h - diameter)/2) || (y - radiusSmall < (h - diameter)/2)) {
                     break;
                 }
 
