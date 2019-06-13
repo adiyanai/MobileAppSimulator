@@ -2,6 +2,7 @@ package com.example.mobileappsimulator;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,7 +16,7 @@ import androidx.core.view.MotionEventCompat;
 public class DrawCircles extends View {
     static int x;
     static int y;
-    final static int radiusBig = 500;
+    static int radiusBig;
     final static int radiusSmall = 100;
     private Paint bigCircle;
     private Paint smallCircle;
@@ -39,7 +40,26 @@ public class DrawCircles extends View {
         smallCircle.setAntiAlias(true);
         smallCircle.setColor(Color.BLACK);
 
+        radiusBig = 500;
         start = true;
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+        super.onSizeChanged(w, h, oldW, oldH);
+        // Account for padding
+        int xPad = getPaddingLeft() + getPaddingRight();
+        int yPad = getPaddingTop() + getPaddingBottom();
+        int width = w - xPad;
+        int height = h - yPad;
+        x = width / 2;
+        y = height / 2;
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+            radiusBig = 400;
+        } else {
+            radiusBig = 500;
+        }
     }
 
     @Override
@@ -85,8 +105,18 @@ public class DrawCircles extends View {
                 if (!isJoystickMoving) {
                     return true;
                 }
+
+                int w, h;
+                w = getWidth();
+                h = getHeight();
+
                 x =  (int)event.getX();
                 y = (int)event.getY();
+
+                if ((x + radiusSmall > w) || (x - radiusSmall < 0) || (y + radiusSmall > h) || (y - radiusSmall < 0)) {
+                    break;
+                }
+
                 invalidate();
                 break;
             }
