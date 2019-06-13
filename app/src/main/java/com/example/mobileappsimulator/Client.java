@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -12,6 +13,9 @@ public class Client {
     private Socket socket;
     private InetAddress serverAddress;
     private int portNumber;
+    // used to send messages
+    private PrintWriter mBufferOut;
+
 
     public Client() {
 
@@ -59,9 +63,11 @@ public class Client {
                     OutputStream os = socket.getOutputStream();
                     OutputStreamWriter osw = new OutputStreamWriter(os);
                     BufferedWriter bw = new BufferedWriter(osw);
+                    mBufferOut = new PrintWriter(bw, true);
 
-                    bw.write(message);
-                    bw.flush();
+                    Log.d(Client.class.getSimpleName(), "Sending: " + message);
+                    mBufferOut.print(message);
+                    mBufferOut.flush();
                 } catch (Exception e) {
                     Log.e("TCP", "S: Error", e);
                 }
@@ -72,6 +78,11 @@ public class Client {
     }
 
     public void close() {
+        if (mBufferOut != null) {
+            mBufferOut.flush();
+            mBufferOut.close();
+        }
+
         try {
             this.socket.close();
         } catch (IOException e) {

@@ -83,7 +83,7 @@ public class DrawCircles extends View {
         canvas.drawCircle(x, y, radiusSmall, smallCircle);
     }
 
-    // todo - handle the send message problem
+    // todo - normalized the elevator and the aileron
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -125,12 +125,12 @@ public class DrawCircles extends View {
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL: {
-                /*String xEvent =  String.valueOf((int)event.getX());
+                String xEvent =  String.valueOf((int)event.getX());
                 String yEvent  = String.valueOf((int)event.getY());
                 String elevator = elevatorPath + yEvent + "\r\n";
                 String aileron = aileronPath + xEvent + "\r\n";
                 CommandModel.getInstance().sendMessage(elevator);
-                CommandModel.getInstance().sendMessage(aileron);*/
+                CommandModel.getInstance().sendMessage(aileron);
                 x =  getWidth() / 2;
                 y = getHeight() / 2;
                 invalidate();
