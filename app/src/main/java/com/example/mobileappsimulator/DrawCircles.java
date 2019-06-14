@@ -14,16 +14,16 @@ import androidx.core.view.MotionEventCompat;
 
 @SuppressWarnings("deprecation")
 public class DrawCircles extends View {
-    private int x;
-    private int y;
+    private float x;
+    private float y;
     private int radiusBig;
     final private int radiusSmall = 100;
     private Paint bigCircle;
     private Paint smallCircle;
     private boolean isJoystickMoving;
     private boolean start;
-    private String elevatorPath = "set controls/flight/elevator ";
-    private String aileronPath = "set controls/flight/aileron ";
+    final String elevatorPath = "set controls/flight/elevator ";
+    final String aileronPath = "set controls/flight/aileron ";
 
     @SuppressLint("ClickableViewAccessibility")
     public DrawCircles(Context context) {
@@ -50,8 +50,8 @@ public class DrawCircles extends View {
         // Account for padding
         int xPad = getPaddingLeft() + getPaddingRight();
         int yPad = getPaddingTop() + getPaddingBottom();
-        int width = w - xPad;
-        int height = h - yPad;
+        float width = (float)(w - xPad);
+        float height = (float)(h - yPad);
         x = width / 2;
         y = height / 2;
 
@@ -75,8 +75,8 @@ public class DrawCircles extends View {
         canvas.drawCircle(xBigCircle, yBigCircle, radiusBig, bigCircle);
 
         if (start) {
-            x =  getWidth() / 2;
-            y = getHeight() / 2;
+            x =  (float)(getWidth() / 2);
+            y = (float)(getHeight() / 2);
         }
 
         // draw smallCircle
@@ -91,8 +91,8 @@ public class DrawCircles extends View {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
-                int xEvent =  (int)event.getX();
-                int yEvent  = (int)event.getY();
+                float xEvent = event.getX();
+                float yEvent  = event.getY();
 
                 if ((xEvent >= x - radiusSmall && xEvent <= x + radiusSmall)
                         && (yEvent >= y - radiusSmall && yEvent <= y + radiusSmall)) {
@@ -106,34 +106,64 @@ public class DrawCircles extends View {
                     return true;
                 }
 
-                int w, h, diameter;
+                float w, h, diameter, minX, maxX, minY, maxY;
                 w = getWidth();
                 h = getHeight();
 
-                x =  (int)event.getX();
-                y = (int)event.getY();
+                x = event.getX();
+                y = event.getY();
 
                 diameter = radiusBig * 2;
+                minX = (w - diameter) / 2;
+                maxX = w - (w - diameter) / 2 ;
+                minY = (h - diameter) / 2 ;
+                maxY = h - (h - diameter) / 2;
 
-                if ((x + radiusSmall > w - (w - diameter)/2) || (x - radiusSmall < (w - diameter)/2) ||
-                        (y + radiusSmall > h - (h - diameter)/2) || (y - radiusSmall < (h - diameter)/2)) {
+                if ((x + radiusSmall > maxX) || (x - radiusSmall < minX) ||
+                        (y + radiusSmall > maxY) || (y - radiusSmall < minY)) {
                     break;
                 }
 
+                float normalizedX, normalizedY;
+
+                // normalized the x & y between -1 to 1
+                if (x > (float)(getWidth() / 2)) {
+                    normalizedX = (((x + radiusSmall - minX)*2) / (maxX - minX)) - 1;
+                } else {
+                    normalizedX = (((x - radiusSmall - minX)*2) / (maxX - minX)) - 1;
+                }
+
+                if (y > (float)(getHeight() / 2)) {
+                    normalizedY = (((y + radiusSmall - minY)*2) / (maxY - minY)) - 1;
+                } else {
+                    normalizedY = (((y - radiusSmall - minY)*2) / (maxY - minY)) - 1;
+                }
+
+                // send to server
+                String elevator = elevatorPath + normalizedX + "\r\n";
+                String aileron = aileronPath + normalizedY + "\r\n";
+                CommandModel.getInstance().sendMessage(elevator);
+                CommandModel.getInstance().sendMessage(aileron);
+
+                // move the joystick
                 invalidate();
+
                 break;
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL: {
-                String xEvent =  String.valueOf((int)event.getX());
-                String yEvent  = String.valueOf((int)event.getY());
-                String elevator = elevatorPath + yEvent + "\r\n";
-                String aileron = aileronPath + xEvent + "\r\n";
+                x =  (float)(getWidth() / 2);
+                y = (float)(getHeight() / 2);
+
+                // send to server
+                String elevator = elevatorPath + "0" + "\r\n";
+                String aileron = aileronPath + "0" + "\r\n";
                 CommandModel.getInstance().sendMessage(elevator);
                 CommandModel.getInstance().sendMessage(aileron);
-                x =  getWidth() / 2;
-                y = getHeight() / 2;
+
+                // move the joystick
                 invalidate();
+
                 isJoystickMoving = false;
                 break;
             }
