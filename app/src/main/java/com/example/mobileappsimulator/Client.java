@@ -85,8 +85,8 @@ public class Client {
 
         try {
             this.socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e("TCP", "C: Error", e);
         }
     }
 }
