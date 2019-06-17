@@ -19,6 +19,7 @@ public class JoystickActivity extends AppCompatActivity {
         String ip = intent.getStringExtra("ip");
         String port = intent.getStringExtra("port");
 
+        // connect to the server
         CommandModel.getInstance().connect(ip, port);
     }
 

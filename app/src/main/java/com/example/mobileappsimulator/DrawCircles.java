@@ -83,7 +83,6 @@ public class DrawCircles extends View {
         canvas.drawCircle(x, y, radiusSmall, smallCircle);
     }
 
-    // todo - normalized the elevator and the aileron
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
